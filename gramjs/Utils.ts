@@ -15,7 +15,7 @@ export function getFileInfo(
         | Api.Message
         | Api.MessageMediaDocument
         | Api.MessageMediaPhoto
-        | Api.TypeInputFileLocation
+        | Api.TypeInputFileLocation,
 ): {
     dcId?: number;
     location: Api.TypeInputFileLocation;
@@ -63,8 +63,8 @@ export function getFileInfo(
             }),
             size: bigInt(
                 _photoSizeByteCount(
-                    location.sizes[location.sizes.length - 1]
-                ) || 0
+                    location.sizes[location.sizes.length - 1],
+                ) || 0,
             ),
         };
     }
@@ -86,21 +86,21 @@ import TypeInputFile = Api.TypeInputFile;
 const USERNAME_RE = new RegExp(
     "@|(?:https?:\\/\\/)?(?:www\\.)?" +
         "(?:telegram\\.(?:me|dog)|t\\.me)\\/(@|joinchat\\/)?",
-    "i"
+    "i",
 );
 
 const JPEG_HEADER = Buffer.from(
     "ffd8ffe000104a46494600010100000100010000ffdb004300281c1e231e19282321232d2b28303c64413c37373c7b585d4964918099968f808c8aa0b4e6c3a0aadaad8a8cc8ffcbdaeef5ffffff9bc1fffffffaffe6fdfff8ffdb0043012b2d2d3c353c76414176f8a58ca5f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8ffc00011080000000003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffc400b5100002010303020403050504040000017d01020300041105122131410613516107227114328191a1082342b1c11552d1f02433627282090a161718191a25262728292a3435363738393a434445464748494a535455565758595a636465666768696a737475767778797a838485868788898a92939495969798999aa2a3a4a5a6a7a8a9aab2b3b4b5b6b7b8b9bac2c3c4c5c6c7c8c9cad2d3d4d5d6d7d8d9dae1e2e3e4e5e6e7e8e9eaf1f2f3f4f5f6f7f8f9faffc4001f0100030101010101010101010000000000000102030405060708090a0bffc400b51100020102040403040705040400010277000102031104052131061241510761711322328108144291a1b1c109233352f0156272d10a162434e125f11718191a262728292a35363738393a434445464748494a535455565758595a636465666768696a737475767778797a82838485868788898a92939495969798999aa2a3a4a5a6a7a8a9aab2b3b4b5b6b7b8b9bac2c3c4c5c6c7c8c9cad2d3d4d5d6d7d8d9dae2e3e4e5e6e7e8e9eaf2f3f4f5f6f7f8f9faffda000c03010002110311003f00",
-    "hex"
+    "hex",
 );
 const JPEG_FOOTER = Buffer.from("ffd9", "hex");
 
 const TG_JOIN_RE = new RegExp("tg:\\/\\/(join)\\?invite=", "i");
 
 const VALID_USERNAME_RE = new RegExp(
-    "^([a-z]((?!__)[\\w\\d]){3,30}[a-z\\d]|gif|vid|" +
+    "^([a-z]((?!__)[\\w\\d]){2,30}[a-z\\d]|gif|vid|" +
         "pic|bing|wiki|imdb|bold|vote|like|coub)$",
-    "i"
+    "i",
 );
 
 function _raiseCastFail(entity: any, target: string): never {
@@ -131,7 +131,7 @@ function _raiseCastFail(entity: any, target: string): never {
 export function getInputPeer(
     entity: any,
     allowSelf = true,
-    checkHash = true
+    checkHash = true,
 ): Api.TypeInputPeer {
     if (entity.SUBCLASS_OF_ID === undefined) {
         // e.g. custom.Dialog (can't cyclic import).
@@ -178,7 +178,7 @@ export function getInputPeer(
             });
         } else {
             throw new TypeError(
-                "Channel without accessHash or min info cannot be input"
+                "Channel without accessHash or min info cannot be input",
             );
         }
     }
@@ -246,7 +246,7 @@ export function _getEntityPair(
     entityId: string,
     entities: Map<string, Entity>,
     cache: EntityCache,
-    getInputPeerFunction: any = getInputPeer
+    getInputPeerFunction: any = getInputPeer,
 ): [Entity?, Api.TypeInputPeer?] {
     const entity = entities.get(entityId);
     let inputEntity;
@@ -597,7 +597,7 @@ export function getInputPhoto(photo: any): Api.TypeInputPhoto {
  */
 
 export function getInputDocument(
-    document: any
+    document: any,
 ): Api.InputDocument | Api.InputDocumentEmpty {
     if (document.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(document, "InputDocument");
@@ -740,14 +740,14 @@ export function getAttributes(
         videoNote = false,
         supportsStreaming = false,
         thumb = null,
-    }: GetAttributesParams
+    }: GetAttributesParams,
 ) {
     const name: string =
         typeof file == "string"
             ? file
             : "name" in file
-            ? file.name || "unnamed"
-            : "unnamed";
+              ? file.name || "unnamed"
+              : "unnamed";
     if (mimeType === undefined) {
         mimeType = mime.getType(name) || "application/octet-stream";
     }
@@ -756,7 +756,7 @@ export function getAttributes(
         Api.DocumentAttributeFilename,
         new Api.DocumentAttributeFilename({
             fileName: name.split(/[\\/]/).pop() || "",
-        })
+        }),
     );
     if (isAudio(file)) {
         const m = _getMetadata(file);
@@ -767,7 +767,7 @@ export function getAttributes(
                 title: m.has("title") ? m.get("title") : undefined,
                 performer: m.has("author") ? m.get("author") : undefined,
                 duration: Number.parseInt(m.get("duration") ?? "0"),
-            })
+            }),
         );
     }
     if (!forceDocument && isVideo(file)) {
@@ -805,7 +805,7 @@ export function getAttributes(
                 new Api.DocumentAttributeAudio({
                     duration: 0,
                     voice: true,
-                })
+                }),
             );
         }
     }
@@ -885,7 +885,7 @@ export function getInputMedia(
         voiceNote = false,
         videoNote = false,
         supportsStreaming = false,
-    }: GetInputMediaInterface = {}
+    }: GetInputMediaInterface = {},
 ): Api.TypeInputMedia {
     if (media.SUBCLASS_OF_ID === undefined) {
         _raiseCastFail(media, "InputMedia");
@@ -999,7 +999,7 @@ export function getInputMedia(
         if (media.poll.quiz) {
             if (!media.results.results) {
                 throw new Error(
-                    "Cannot cast unanswered quiz to any kind of InputMedia."
+                    "Cannot cast unanswered quiz to any kind of InputMedia.",
                 );
             }
 
@@ -1105,7 +1105,7 @@ export function getPeer(peer: EntityLike | any) {
 }
 
 export function sanitizeParseMode(
-    mode: string | ParseInterface
+    mode: string | ParseInterface,
 ): ParseInterface {
     if (mode === "md" || mode === "markdown") {
         return MarkdownParser;
@@ -1186,10 +1186,10 @@ export function getPeerId(peer: EntityLike, addMark = true): string {
  * @param markedId
  */
 export function resolveId(
-    markedId: bigInt.BigInteger
+    markedId: bigInt.BigInteger,
 ): [
     bigInt.BigInteger,
-    typeof Api.PeerUser | typeof Api.PeerChannel | typeof Api.PeerChat
+    typeof Api.PeerUser | typeof Api.PeerChannel | typeof Api.PeerChat,
 ] {
     if (markedId.greaterOrEquals(bigInt.zero)) {
         return [markedId, Api.PeerUser];
@@ -1236,7 +1236,7 @@ export function  _getEntityPair(entityId, entities, cache, getInputPeer = getInp
 */
 
 export function getMessageId(
-    message: number | Api.TypeMessage | MessageIDLike | undefined
+    message: number | Api.TypeMessage | MessageIDLike | undefined,
 ): number | undefined {
     if (!message) {
         return undefined;

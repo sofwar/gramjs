@@ -7,7 +7,7 @@ const snakeToCamelCase = (name: string) => {
 };
 const variableSnakeToCamelCase = (str: string) =>
     str.replace(/([-_][a-z])/g, (group) =>
-        group.toUpperCase().replace("-", "").replace("_", "")
+        group.toUpperCase().replace("-", "").replace("_", ""),
     );
 
 const CORE_TYPES = new Set([
@@ -32,8 +32,23 @@ const AUTH_KEY_TYPES = new Set([
 ]);
 
 const fromLine = (line: string, isFunction: boolean) => {
+    // Skip lines with ? instead of constructor id (like "int ? = Int;")
+    if (line.includes(" ? = ")) {
+        return null;
+    }
+
+    // Skip special vector definition (like "vector {t:Type} # [ t ] = Vector t;")
+    if (line.includes(" # [ t ] = ")) {
+        return null;
+    }
+
+    // Skip array definitions (like "int128 4*[ int ] = Int128;")
+    if (/\d+\*\[/.test(line)) {
+        return null;
+    }
+
     const match = line.match(
-        /([\w.]+)(?:#([0-9a-fA-F]+))?(?:\s{?\w+:[\w\d<>#.?!]+}?)*\s=\s([\w\d<>#.?]+);$/
+        /([\w.]+)(?:#([0-9a-fA-F]+))?(?:\s{?\w+:[\w\d<>#.?!]+}?)*\s=\s([\w\d<>#.?]+);$/,
     );
     if (!match) {
         // Probably "vector#1cb5c415 {t:Type} # [ t ] = Vector t;"
@@ -76,7 +91,7 @@ const fromLine = (line: string, isFunction: boolean) => {
         }
 
         currentConfig.constructorId = crc32(
-            Buffer.from(representation, "utf8")
+            Buffer.from(representation, "utf8"),
         );
     }
     for (const [brace, name, argType] of argsMatch) {
@@ -134,7 +149,7 @@ function buildArgConfig(name: string, argType: string) {
         // However, we assume that the argument will always be starts with 'flags'
         // @ts-ignore
         const flagMatch = currentConfig.type.match(
-            /(flags(?:\d+)?).(\d+)\?([\w<>.]+)/
+            /(flags(?:\d+)?).(\d+)\?([\w<>.]+)/,
         );
 
         if (flagMatch) {
@@ -192,11 +207,11 @@ const parseTl = function* (
     content: string,
     layer: string,
     methods: any[] = [],
-    ignoreIds = CORE_TYPES
+    ignoreIds = CORE_TYPES,
 ) {
     const methodInfo = (methods || []).reduce(
         (o, m) => ({ ...o, [m.name]: m }),
-        {}
+        {},
     );
     const objAll = [];
     const objByName: any = {};
@@ -229,6 +244,11 @@ const parseTl = function* (
 
         try {
             const result = fromLine(line, isFunction);
+
+            // Skip null results (like "int ? = Int;" lines)
+            if (result === null) {
+                continue;
+            }
 
             if (ignoreIds.has(result.constructorId)) {
                 continue;
@@ -311,7 +331,7 @@ export function serializeBytes(data: Buffer | string | any) {
                 data.length % 256,
                 (data.length >> 8) % 256,
                 (data.length >> 16) % 256,
-            ])
+            ]),
         );
         r.push(data);
     }

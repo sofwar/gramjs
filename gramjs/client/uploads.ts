@@ -12,10 +12,10 @@ import { getCommentData } from "./messages";
 import bigInt from "big-integer";
 
 interface OnProgress {
+    isCanceled?: boolean;
+
     // Float between 0 and 1.
     (progress: number): void;
-
-    isCanceled?: boolean;
 }
 
 /**
@@ -66,7 +66,7 @@ class CustomBuffer {
     constructor(private readonly options: CustomBufferOptions) {
         if (!options.buffer && !options.filePath) {
             throw new Error(
-                "Either one of `buffer` or `filePath` should be specified"
+                "Either one of `buffer` or `filePath` should be specified",
             );
         }
     }
@@ -100,7 +100,7 @@ const BUFFER_SIZE_20MB = 20 * 1024 * 1024;
 async function getFileBuffer(
     file: File | CustomFile,
     fileSize: number,
-    maxBufferSize: number
+    maxBufferSize: number,
 ): Promise<CustomBuffer> {
     const options: CustomBufferOptions = {};
     if (fileSize > maxBufferSize && file instanceof CustomFile) {
@@ -115,7 +115,7 @@ async function getFileBuffer(
 /** @hidden */
 export async function uploadFile(
     client: TelegramClient,
-    fileParams: UploadFileParams
+    fileParams: UploadFileParams,
 ): Promise<Api.InputFile | Api.InputFileBig> {
     const { file, onProgress } = fileParams;
     let { workers } = fileParams;
@@ -129,7 +129,7 @@ export async function uploadFile(
     const buffer = await getFileBuffer(
         file,
         size,
-        fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1
+        fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1,
     );
 
     // Make sure a new sender can be created before starting upload
@@ -173,7 +173,7 @@ export async function uploadFile(
                         try {
                             // We always upload from the DC we are in
                             sender = await client.getSender(
-                                client.session.dcId
+                                client.session.dcId,
                             );
                             await sender.send(
                                 isLarge
@@ -187,7 +187,7 @@ export async function uploadFile(
                                           fileId,
                                           filePart: jMemo,
                                           bytes: bytesMemo,
-                                      })
+                                      }),
                             );
                         } catch (err: any) {
                             if (sender && !sender.isConnected()) {
@@ -210,7 +210,7 @@ export async function uploadFile(
                         }
                         break;
                     }
-                })(j, bytes)
+                })(j, bytes),
             );
         }
 
@@ -334,7 +334,7 @@ export async function _fileToMedia(
         mimeType,
         asImage,
         workers = 1,
-    }: FileToMediaInterface
+    }: FileToMediaInterface,
 ): Promise<{
     fileHandle?: any;
     media?: Api.TypeInputMedia;
@@ -397,7 +397,7 @@ export async function _fileToMedia(
             createdFile = new CustomFile(
                 path.basename(file),
                 (await fs.stat(file)).size,
-                file
+                file,
             );
         } else if (
             (typeof File !== "undefined" && file instanceof File) ||
@@ -418,7 +418,7 @@ export async function _fileToMedia(
         }
         if (!createdFile) {
             throw new Error(
-                `Could not create file from ${JSON.stringify(file)}`
+                `Could not create file from ${JSON.stringify(file)}`,
             );
         }
         fileHandle = await uploadFile(client, {
@@ -432,7 +432,7 @@ export async function _fileToMedia(
     if (media != undefined) {
     } else if (fileHandle == undefined) {
         throw new Error(
-            `Failed to convert ${file} to media. Not an existing file or an HTTP URL`
+            `Failed to convert ${file} to media. Not an existing file or an HTTP URL`,
         );
     } else if (asImage) {
         media = new Api.InputMediaUploadedPhoto({
@@ -461,7 +461,7 @@ export async function _fileToMedia(
                 uploadedThumb = new CustomFile(
                     path.basename(thumb),
                     (await fs.stat(thumb)).size,
-                    thumb
+                    thumb,
                 );
             } else if (typeof File !== "undefined" && thumb instanceof File) {
                 uploadedThumb = thumb;
@@ -477,7 +477,7 @@ export async function _fileToMedia(
                         name,
                         thumb.length,
                         "",
-                        thumb
+                        thumb,
                     );
                 }
             }
@@ -528,7 +528,7 @@ export async function _sendAlbum(
         noforwards,
         commentTo,
         topMsgId,
-    }: SendFileInterface
+    }: SendFileInterface,
 ) {
     entity = await client.getInputEntity(entity);
     let files = [];
@@ -583,7 +583,7 @@ export async function _sendAlbum(
                 new Api.messages.UploadMedia({
                     peer: entity,
                     media,
-                })
+                }),
             );
             if (r instanceof Api.MessageMediaPhoto) {
                 media = getInputMedia(r.photo);
@@ -593,7 +593,7 @@ export async function _sendAlbum(
                 new Api.messages.UploadMedia({
                     peer: entity,
                     media,
-                })
+                }),
             );
             if (r instanceof Api.MessageMediaDocument) {
                 media = getInputMedia(r.document);
@@ -609,7 +609,7 @@ export async function _sendAlbum(
                 media: media!,
                 message: text,
                 entities: msgEntities,
-            })
+            }),
         );
     }
     let replyObject = undefined;
@@ -629,7 +629,7 @@ export async function _sendAlbum(
             scheduleDate: scheduleDate,
             clearDraft: clearDraft,
             noforwards: noforwards,
-        })
+        }),
     );
     const randomIds = albumFiles.map((m) => m.randomId);
     return client._getResponseMessage(randomIds, result, entity) as Api.Message;
@@ -661,7 +661,7 @@ export async function sendFile(
         noforwards,
         commentTo,
         topMsgId,
-    }: SendFileInterface
+    }: SendFileInterface,
 ) {
     if (!file) {
         throw new Error("You need to specify a file");
@@ -703,7 +703,7 @@ export async function sendFile(
         [caption, msgEntities] = await _parseMessageText(
             client,
             caption,
-            parseMode
+            parseMode,
         );
     }
 
@@ -750,7 +750,7 @@ export async function sendFile(
 
 function fileToBuffer(file: File | CustomFile): Promise<Buffer> | Buffer {
     if (typeof File !== "undefined" && file instanceof File) {
-        return new Response(file).arrayBuffer() as Promise<Buffer>;
+        return new Response(file).arrayBuffer() as unknown as Promise<Buffer>;
     } else if (file instanceof CustomFile) {
         if (file.buffer != undefined) {
             return file.buffer;

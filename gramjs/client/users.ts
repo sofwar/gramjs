@@ -23,7 +23,7 @@ export async function invoke<R extends Api.AnyRequest>(
     client: TelegramClient,
     request: R,
     dcId?: number,
-    otherSender?: MTProtoSender
+    otherSender?: MTProtoSender,
 ): Promise<R["__response"]> {
     if (request.classType !== "request") {
         throw new Error("You can only invoke MTProtoRequests");
@@ -37,13 +37,13 @@ export async function invoke<R extends Api.AnyRequest>(
     }
     if (sender == undefined) {
         throw new Error(
-            "Cannot send requests while disconnected. You need to call .connect()"
+            "Cannot send requests while disconnected. You need to call .connect()",
         );
     }
 
     if (sender.userDisconnected) {
         throw new Error(
-            "Cannot send requests while disconnected. Please reconnect."
+            "Cannot send requests while disconnected. Please reconnect.",
         );
     }
 
@@ -71,7 +71,7 @@ export async function invoke<R extends Api.AnyRequest>(
                 e.errorMessage === "RPC_MCGET_FAIL"
             ) {
                 client._log.warn(
-                    `Telegram is having internal issues ${e.constructor.name}`
+                    `Telegram is having internal issues ${e.constructor.name}`,
                 );
                 await sleep(2000);
             } else if (
@@ -80,7 +80,7 @@ export async function invoke<R extends Api.AnyRequest>(
             ) {
                 if (e.seconds <= client.floodSleepThreshold) {
                     client._log.info(
-                        `Sleeping for ${e.seconds}s on flood wait (Caused by ${request.className})`
+                        `Sleeping for ${e.seconds}s on flood wait (Caused by ${request.className})`,
                     );
                     await sleep(e.seconds * 1000);
                 } else {
@@ -130,14 +130,14 @@ export async function invoke<R extends Api.AnyRequest>(
 /** @hidden */
 export async function getMe<
     T extends boolean,
-    R = T extends true ? Api.InputPeerUser : Api.User
+    R = T extends true ? Api.InputPeerUser : Api.User,
 >(client: TelegramClient, inputPeer: T): Promise<R> {
     if (inputPeer && client._selfInputPeer) {
         return client._selfInputPeer as unknown as R;
     }
     const me = (
         await client.invoke(
-            new Api.users.GetUsers({ id: [new Api.InputUserSelf()] })
+            new Api.users.GetUsers({ id: [new Api.InputUserSelf()] }),
         )
     )[0] as Api.User;
     client._bot = me.bot;
@@ -145,7 +145,7 @@ export async function getMe<
     if (!client._selfInputPeer) {
         client._selfInputPeer = utils.getInputPeer(
             me,
-            false
+            false,
         ) as Api.InputPeerUser;
     }
     return inputPeer
@@ -177,7 +177,7 @@ export async function isUserAuthorized(client: TelegramClient) {
 /** @hidden */
 export async function getEntity(
     client: TelegramClient,
-    entity: EntityLike | EntityLike[]
+    entity: EntityLike | EntityLike[],
 ): Promise<Entity | Entity[]> {
     const single = !isArrayLike(entity);
     let entityArray: EntityLike[] = [];
@@ -218,7 +218,7 @@ export async function getEntity(
         users = await client.invoke(
             new Api.users.GetUsers({
                 id: users,
-            })
+            }),
         );
     }
     if (chats.length) {
@@ -267,7 +267,7 @@ export async function getEntity(
 /** @hidden */
 export async function getInputEntity(
     client: TelegramClient,
-    peer: EntityLike
+    peer: EntityLike,
 ): Promise<Api.TypeInputPeer> {
     // Short-circuit if the input parameter directly maps to an InputPeer
 
@@ -345,7 +345,7 @@ export async function getInputEntity(
                         accessHash: bigInt.zero,
                     }),
                 ],
-            })
+            }),
         );
         if (users.length && !(users[0] instanceof Api.UserEmpty)) {
             // If the user passed a valid ID they expect to work for
@@ -371,7 +371,7 @@ export async function getInputEntity(
                             accessHash: bigInt.zero,
                         }),
                     ],
-                })
+                }),
             );
 
             return utils.getInputPeer(channels.chats[0]);
@@ -388,14 +388,14 @@ export async function getInputEntity(
         `Could not find the input entity for ${JSON.stringify(peer)}.
          Please read https://` +
             "docs.telethon.dev/en/stable/concepts/entities.html to" +
-            " find out more details."
+            " find out more details.",
     );
 }
 
 /** @hidden */
 export async function _getEntityFromString(
     client: TelegramClient,
-    string: string
+    string: string,
 ) {
     const phone = utils.parsePhone(string);
     if (phone) {
@@ -403,7 +403,7 @@ export async function _getEntityFromString(
             const result = await client.invoke(
                 new Api.contacts.GetContacts({
                     hash: bigInt.zero,
-                })
+                }),
             );
             if (!(result instanceof Api.contacts.ContactsNotModified)) {
                 for (const user of result.users) {
@@ -416,7 +416,7 @@ export async function _getEntityFromString(
             if (e.errorMessage === "BOT_METHOD_INVALID") {
                 throw new Error(
                     "Cannot get entity by phone number as a " +
-                        "bot (try using integer IDs, not strings)"
+                        "bot (try using integer IDs, not strings)",
                 );
             }
             throw e;
@@ -433,12 +433,12 @@ export async function _getEntityFromString(
             const invite = await client.invoke(
                 new Api.messages.CheckChatInvite({
                     hash: username,
-                })
+                }),
             );
             if (invite instanceof Api.ChatInvite) {
                 throw new Error(
                     "Cannot get entity from a channel (or group) " +
-                        "that you are not part of. Join the group and retry"
+                        "that you are not part of. Join the group and retry",
                 );
             } else if (invite instanceof Api.ChatInviteAlready) {
                 return invite.chat;
@@ -446,7 +446,7 @@ export async function _getEntityFromString(
         } else if (username) {
             try {
                 const result = await client.invoke(
-                    new Api.contacts.ResolveUsername({ username: username })
+                    new Api.contacts.ResolveUsername({ username: username }),
                 );
                 const pid = utils.getPeerId(result.peer, false);
                 if (result.peer instanceof Api.PeerUser) {
@@ -470,6 +470,15 @@ export async function _getEntityFromString(
             }
         }
     }
+
+    // Fallback: try resolving from disk cache by exact name/title (Telethon-like behavior)
+    try {
+        const cachedInput = client.session.getInputEntity(string);
+        if (cachedInput) {
+            return await getEntity(client, cachedInput as any);
+        }
+    } catch (e) {}
+
     throw new Error(`Cannot find any entity corresponding to "${string}"`);
 }
 
@@ -477,7 +486,7 @@ export async function _getEntityFromString(
 export async function getPeerId(
     client: TelegramClient,
     peer: EntityLike,
-    addMark = true
+    addMark = true,
 ) {
     if (typeof peer == "string") {
         const valid = parseID(peer);
@@ -509,7 +518,7 @@ export async function _getPeer(client: TelegramClient, peer: EntityLike) {
         return undefined;
     }
     const [i, cls] = utils.resolveId(
-        returnBigInt(await client.getPeerId(peer))
+        returnBigInt(await client.getPeerId(peer)),
     );
     return new cls({
         userId: i,

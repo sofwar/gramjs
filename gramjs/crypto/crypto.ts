@@ -50,7 +50,7 @@ export class CTR {
         for (let i = 0; i < encrypted.length; i++) {
             if (this._remainingCounterIndex === 16) {
                 this._remainingCounter = Buffer.from(
-                    i2ab(this._aes.encrypt(ab2i(this._counter._counter)))
+                    i2ab(this._aes.encrypt(ab2i(this._counter._counter))),
                 );
                 this._remainingCounterIndex = 0;
                 this._counter.increment();
@@ -106,11 +106,17 @@ export class Hash {
         if (this.data) {
             if (this.algorithm === "sha1") {
                 return Buffer.from(
-                    await self.crypto.subtle.digest("SHA-1", this.data)
+                    await self.crypto.subtle.digest(
+                        "SHA-1",
+                        this.data as BufferSource,
+                    ),
                 );
             } else if (this.algorithm === "sha256") {
                 return Buffer.from(
-                    await self.crypto.subtle.digest("SHA-256", this.data)
+                    await self.crypto.subtle.digest(
+                        "SHA-1",
+                        this.data as BufferSource,
+                    ),
                 );
             }
         }
@@ -129,7 +135,7 @@ export async function pbkdf2Sync(
         password,
         { name: "PBKDF2" },
         false,
-        ["deriveBits"]
+        ["deriveBits"],
     );
     return Buffer.from(
         await crypto.subtle.deriveBits(
@@ -140,8 +146,8 @@ export async function pbkdf2Sync(
                 iterations,
             },
             passwordKey,
-            512
-        )
+            512,
+        ),
     );
 }
 
