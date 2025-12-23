@@ -793,7 +793,7 @@ export async function sendMessage(
         if (formattingEntities == undefined) {
             [message, formattingEntities] = await _parseMessageText(
                 client,
-                message || "",
+                (message as string) || "",
                 parseMode
             );
         }

@@ -494,7 +494,7 @@ export async function signInBot(
         new Api.auth.ImportBotAuthorization({
             apiId,
             apiHash,
-            botAuthToken,
+            botAuthToken: botAuthToken as string,
         })
     )) as Api.auth.Authorization;
     return user;
