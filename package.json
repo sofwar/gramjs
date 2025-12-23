@@ -1,5 +1,5 @@
 {
-  "name": "telegram-gramjs",
+  "name": "telegram",
   "version": "2.30.0",
   "description": "NodeJS/Browser MTProto API Telegram client library,",
   "main": "index.js",
