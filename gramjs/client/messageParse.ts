@@ -69,14 +69,14 @@ export async function _parseMessageText(
     for (let i = msgEntities.length - 1; i >= 0; i--) {
         const e = msgEntities[i];
         if (e instanceof Api.MessageEntityTextUrl) {
-            const m = /^@|\+|tg:\/\/user\?id=(\d+)/.exec(e.url);
+            const m = /^@|tg:\/\/user\?id=(\d+)/.exec(e.url);
             if (m) {
                 const userIdOrUsername = m[1] ? Number(m[1]) : e.url;
                 const isMention = await _replaceWithMention(
                     client,
                     msgEntities,
                     i,
-                    userIdOrUsername
+                    userIdOrUsername,
                 );
                 if (!isMention) {
                     msgEntities.splice(i, 1);
