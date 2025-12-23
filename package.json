@@ -2,9 +2,27 @@
   "name": "telegram",
   "version": "2.30.0",
   "description": "NodeJS/Browser MTProto API Telegram client library,",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "require": "./dist/errors/index.js",
+      "import": "./dist/errors/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "require": "./dist/*.js",
+      "import": "./dist/*.js"
+    }
+  },
   "scripts": {
+    "build": "tsc",
     "test": "jest"
   },
   "repository": {
@@ -64,6 +82,7 @@
     "pako": "^2.0.3",
     "path-browserify": "^1.0.1",
     "real-cancellable-promise": "^1.1.1",
+    "socks": "^2.8.7",
     "store2": "^2.13.0",
     "ts-custom-error": "^3.2.0",
     "websocket": "^1.0.34"

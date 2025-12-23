@@ -1,0 +1,61 @@
+{
+  "name": "telegram",
+  "version": "2.30.0",
+  "description": "NodeJS/Browser MTProto API Telegram client library,",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "import": "./index.js"
+    },
+    "./errors": {
+      "types": "./errors/index.d.ts",
+      "require": "./errors/index.js",
+      "import": "./errors/index.js"
+    },
+    "./*": {
+      "types": "./*.d.ts",
+      "require": "./*.js",
+      "import": "./*.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sofwar/gramjs.git"
+  },
+  "browser": {
+    "fs": false
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sofwar/gramjs/issues"
+  },
+  "keywords": [
+    "telegram",
+    "mtproto",
+    "userbot",
+    "api"
+  ],
+  "homepage": "https://github.com/sofwar/gramjs#readme",
+  "optionalDependencies": {
+    "bufferutil": "^4.0.3",
+    "utf-8-validate": "^5.0.5"
+  },
+  "dependencies": {
+    "@cryptography/aes": "^0.1.1",
+    "async-mutex": "^0.3.0",
+    "big-integer": "^1.6.48",
+    "buffer": "^6.0.3",
+    "htmlparser2": "^6.1.0",
+    "mime": "^3.0.0",
+    "pako": "^2.0.3",
+    "path-browserify": "^1.0.1",
+    "real-cancellable-promise": "^1.1.1",
+    "socks": "^2.8.3",
+    "store2": "^2.13.0",
+    "ts-custom-error": "^3.2.0",
+    "websocket": "^1.0.34"
+  }
+}
