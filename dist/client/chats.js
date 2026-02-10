@@ -16,11 +16,7 @@ const inspect_1 = require("../inspect");
 const Utils_1 = require("../Utils");
 const _MAX_PARTICIPANTS_CHUNK_SIZE = 200;
 const _MAX_ADMIN_LOG_CHUNK_SIZE = 100;
-const _MAX_PROFILE_PHOTO_CHUNK_SIZE = 100;
 class _ChatAction {
-    [inspect_1.inspect.custom]() {
-        return (0, Helpers_1.betterConsoleLog)(this);
-    }
     constructor(client, chat, action, params = {
         delay: 4,
         autoCancel: true,
@@ -33,6 +29,9 @@ class _ChatAction {
         this._request = undefined;
         this._task = null;
         this._running = false;
+    }
+    [inspect_1.inspect.custom]() {
+        return (0, Helpers_1.betterConsoleLog)(this);
     }
     async start() {
         this._request = new tl_1.Api.messages.SetTyping({

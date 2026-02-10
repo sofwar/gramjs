@@ -31,7 +31,7 @@ export interface IterParticipantsParams {
     offset?: number;
     /** a query string to filter participants based on their display names and usernames. defaults to "" (everyone) */
     search?: string;
-    /** optional filter to be used. E.g only admins filter or only banned members filter. PS : some filters need more permissions. */
+    /** optional filter to be used. E.g. only admins filter or only banned members filter. PS : some filters need more permissions. */
     filter?: Api.TypeChannelParticipantsFilter;
     /** whether to call an extra request (GetFullChannel) to show the total of users in the group/channel. if set to false total will be 0 */
     showTotal?: boolean;

@@ -55,7 +55,7 @@ function buildReplyMarkup(buttons, inlineOnly = false) {
             if (!isNormal && inline) {
                 isNormal = false;
             }
-            if (button.SUBCLASS_OF_ID == 0xbad74a3) {
+            if (!(button instanceof tl_1.Api.InputKeyboardButtonRequestPeer) || button.SUBCLASS_OF_ID == 0xbad74a3) {
                 // 0xbad74a3 == crc32(b'KeyboardButton')
                 current.push(button);
             }

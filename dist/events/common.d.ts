@@ -51,6 +51,7 @@ export declare class EventCommon extends ChatGetter {
     _eventName: string;
     _entities: Map<string, Entity>;
     _messageId?: number;
+    [key: string]: any;
     constructor({ chatPeer, msgId, broadcast, }: EventCommonInterface);
     _setClient(client: TelegramClient): void;
     get client(): TelegramClient | undefined;
@@ -59,6 +60,7 @@ export declare class EventCommonSender extends SenderGetter {
     _eventName: string;
     _entities: Map<string, Entity>;
     _messageId?: number;
+    [key: string]: any;
     constructor({ chatPeer, msgId, broadcast, }: EventCommonInterface);
     _setClient(client: TelegramClient): void;
     get client(): TelegramClient | undefined;
