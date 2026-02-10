@@ -10,13 +10,12 @@ import {
 import { RequestIter } from "../requestIter";
 import { helpers, utils } from "../";
 import { Api } from "../tl";
-import bigInt, { BigInteger, isInstance } from "big-integer";
+import bigInt, { BigInteger } from "big-integer";
 import { inspect } from "../inspect";
 import { getPeerId } from "../Utils";
 
 const _MAX_PARTICIPANTS_CHUNK_SIZE = 200;
 const _MAX_ADMIN_LOG_CHUNK_SIZE = 100;
-const _MAX_PROFILE_PHOTO_CHUNK_SIZE = 100;
 
 interface ChatActionInterface {
     delay: number;
@@ -57,10 +56,6 @@ class _ChatAction {
     private _task: null;
     private _running: boolean;
 
-    [inspect.custom]() {
-        return betterConsoleLog(this);
-    }
-
     constructor(
         client: TelegramClient,
         chat: EntityLike,
@@ -78,6 +73,10 @@ class _ChatAction {
         this._request = undefined;
         this._task = null;
         this._running = false;
+    }
+
+    [inspect.custom]() {
+        return betterConsoleLog(this);
     }
 
     async start() {
@@ -178,8 +177,10 @@ export class _ParticipantsIter extends RequestIter {
         } else {
             this.filterEntity = (entity: Entity) => true;
         }
+
         // Only used for channels, but we should always set the attribute
         this.requests = [];
+
         if (ty == helpers._EntityType.CHANNEL) {
             if (showTotal) {
                 const channel = await this.client.invoke(
@@ -413,7 +414,7 @@ export interface IterParticipantsParams {
     offset?: number;
     /** a query string to filter participants based on their display names and usernames. defaults to "" (everyone) */
     search?: string;
-    /** optional filter to be used. E.g only admins filter or only banned members filter. PS : some filters need more permissions. */
+    /** optional filter to be used. E.g. only admins filter or only banned members filter. PS : some filters need more permissions. */
     filter?: Api.TypeChannelParticipantsFilter;
     /** whether to call an extra request (GetFullChannel) to show the total of users in the group/channel. if set to false total will be 0 */
     showTotal?: boolean;

@@ -164,6 +164,8 @@ export class EventCommon extends ChatGetter {
     _entities: Map<string, Entity>;
     _messageId?: number;
 
+    [key: string]: any;
+
     constructor({
         chatPeer = undefined,
         msgId = undefined,
@@ -189,6 +191,8 @@ export class EventCommonSender extends SenderGetter {
     _eventName = "Event";
     _entities: Map<string, Entity>;
     _messageId?: number;
+
+    [key: string]: any;
 
     constructor({
         chatPeer = undefined,

@@ -20,14 +20,14 @@ export function buildReplyMarkup(
     }
     if ("SUBCLASS_OF_ID" in buttons) {
         if (buttons.SUBCLASS_OF_ID == 0xe2e10ef2) {
-            return buttons;
+            return buttons as Api.TypeReplyMarkup;
         }
     }
     if (!isArrayLike(buttons)) {
-        buttons = [[buttons]];
+        buttons = [[buttons as ButtonLike]];
     } else if (!buttons || !isArrayLike(buttons[0])) {
         // @ts-ignore
-        buttons = [buttons];
+        buttons = [buttons as ButtonLike[]];
     }
     let isInline = false;
     let isNormal = false;
@@ -37,9 +37,10 @@ export function buildReplyMarkup(
 
     const rows = [];
     // @ts-ignore
-    for (const row of buttons) {
-        const current = [];
-        for (let button of row) {
+    for (const row of buttons as ButtonLike[][]) {
+        const current: Api.TypeKeyboardButton[] = [];
+
+        for (let button of row as ButtonLike[]) {
             if (button instanceof Button) {
                 if (button.resize != undefined) {
                     resize = button.resize;
@@ -54,16 +55,20 @@ export function buildReplyMarkup(
             } else if (button instanceof MessageButton) {
                 button = button.button;
             }
+
             const inline = Button._isInline(button);
+
             if (!isInline && inline) {
                 isInline = true;
             }
+
             if (!isNormal && inline) {
                 isNormal = false;
             }
-            if (button.SUBCLASS_OF_ID == 0xbad74a3) {
+
+            if (!(button instanceof Api.InputKeyboardButtonRequestPeer) || button.SUBCLASS_OF_ID == 0xbad74a3) {
                 // 0xbad74a3 == crc32(b'KeyboardButton')
-                current.push(button);
+                current.push(button as Api.TypeKeyboardButton);
             }
         }
         if (current) {
