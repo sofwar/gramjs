@@ -113,5 +113,4 @@ If your ISP is blocking Telegram, you can check [My ISP blocks Telegram. How can
 
 If you have any questions about GramJS, feel free to open an issue or ask directly in our telegram group - [@GramJSChat](https://t.me/gramjschat).
 
-
 https://github.com/telegramdesktop/tdesktop/blob/dev/Telegram/SourceFiles/mtproto/scheme/api.tl
