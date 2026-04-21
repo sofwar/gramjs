@@ -14,7 +14,7 @@ export declare class CTR {
 }
 export declare function createDecipheriv(algorithm: string, key: Buffer, iv: Buffer): CTR;
 export declare function createCipheriv(algorithm: string, key: Buffer, iv: Buffer): CTR;
-export declare function randomBytes(count: number): Uint8Array<ArrayBuffer>;
+export declare function randomBytes(count: number): Uint8Array;
 export declare class Hash {
     private readonly algorithm;
     private data?;
