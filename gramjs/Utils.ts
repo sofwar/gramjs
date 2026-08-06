@@ -1003,10 +1003,20 @@ export function getInputMedia(
                 );
             }
 
+            /* Since layer 228 inputMediaPoll takes answer indexes, not the
+               raw option bytes the results are keyed by. */
             correctAnswers = [];
             for (const r of media.results.results) {
-                if (r.correct) {
-                    correctAnswers.push(r.option);
+                if (!r.correct) {
+                    continue;
+                }
+                const index = media.poll.answers.findIndex(
+                    (answer) =>
+                        answer instanceof Api.PollAnswer &&
+                        answer.option.equals(r.option),
+                );
+                if (index !== -1) {
+                    correctAnswers.push(index);
                 }
             }
         } else {

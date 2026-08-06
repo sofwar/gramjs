@@ -75,23 +75,59 @@ const rl = readline.createInterface({
 
 Be sure to save output of `client.session.save()` into `stringSession` or `storeSession` variable to avoid logging in again.
 
+## Building from source
+
+This fork is consumed straight from git, so the compiled `dist/` is committed
+alongside the sources. **Always run the build before committing** — the check
+below refuses anything that is out of sync.
+
+```bash
+npm ci
+npm run build          # codegen -> clean -> tsc -> assets -> smoke test
+```
+
+| Command | What it does |
+| --- | --- |
+| `npm run build` | Full build into `dist/`. The only command you need before a commit. |
+| `npm run build:check` | Builds into a temp dir and diffs it against `dist/`. Fails if `dist/` is stale. Nothing is written. |
+| `npm run codegen` | Only regenerates the derived sources (see below). |
+| `npm run codegen:check` | Fails if any derived source is stale. |
+| `npm run typecheck` | `tsc --noEmit`, no output written. |
+| `npm test` | Jest. |
+| `npm run verify` | `build:check` + tests. Run this in CI. |
+| `npm run build:browser` | Browser bundle, see below. |
+
+### Updating the TL layer
+
+Replace `gramjs/tl/static/api.tl` (and `schema.tl` if it changed), then run
+`npm run build`. Everything else is derived and must never be edited by hand:
+
+| Derived file | Generated from |
+| --- | --- |
+| `gramjs/tl/apiTl.js`, `gramjs/tl/schemaTl.js` | the `.tl` schemas — this is what the runtime actually parses |
+| `gramjs/tl/api.d.ts` | the `.tl` schemas, via `gramjs/tl/types-generator` |
+| `LAYER` in `gramjs/tl/AllTLObjects.ts` | the `// LAYER <n>` marker at the end of `api.tl` |
+| `gramjs/Version.ts` | `version` in `package.json` |
+
+A layer bump usually breaks a few call sites where Telegram widened a boxed
+type — `tsc` will point at them and the build stops rather than emitting a
+half-updated `dist/`.
+
 ## Running GramJS inside browsers
 
 GramJS works great in combination with frontend libraries such as React, Vue and others.
 
 While working within browsers, GramJS is using `localStorage` to cache the layers.
 
-To get a browser bundle of GramJS, use the following command:
+To get a browser bundle of GramJS (`browser/telegram.js`, UMD), run:
 
 ```bash
-NODE_ENV=production npx webpack
+npm run build:browser        # add --dev for an unminified bundle
 ```
 
-You can also use the helpful script `generate_webpack.js`
-
-```bash
-node generate_webpack.js
-```
+It builds from a throwaway `tempBrowser/` copy in which every `*-BROWSER.ts`
+file replaces its node counterpart, so it never touches `dist/`, `tsconfig.json`
+or `package.json`.
 
 ## Calling the raw API
 

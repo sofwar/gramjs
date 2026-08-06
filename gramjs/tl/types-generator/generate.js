@@ -36,7 +36,12 @@ function patchMethods(methods) {
     }
 }
 
-function main() {
+/**
+ * Builds the content of `tl/api.d.ts` from the static TL schemas.
+ * Pure: returns the generated source instead of touching the disk, so the
+ * build can also use it to check whether the committed file is up to date.
+ */
+function generateApiTypes() {
     const tlContent = fs.readFileSync(INPUT_FILE, "utf-8");
     const apiConfig = extractParams(tlContent);
     const schemeContent = fs.readFileSync(SCHEMA_FILE, "utf-8");
@@ -50,13 +55,11 @@ function main() {
     // patching custom types
 
     patchMethods(functions);
-    const generated = templateFn({
+    return templateFn({
         types: types,
         functions: functions,
         constructors: constructors,
     });
-
-    fs.writeFileSync(OUTPUT_FILE, generated);
 }
 
 function extractParams(fileContent) {
@@ -95,4 +98,8 @@ function extractParams(fileContent) {
     };
 }
 
-main();
+module.exports = { generateApiTypes, OUTPUT_FILE };
+
+if (require.main === module) {
+    fs.writeFileSync(OUTPUT_FILE, generateApiTypes());
+}

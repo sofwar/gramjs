@@ -10,10 +10,61 @@
       "require": "./dist/index.js",
       "import": "./dist/index.js"
     },
+    "./package.json": "./package.json",
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "require": "./dist/client/index.js",
+      "import": "./dist/client/index.js"
+    },
     "./errors": {
       "types": "./dist/errors/index.d.ts",
       "require": "./dist/errors/index.js",
       "import": "./dist/errors/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "require": "./dist/events/index.js",
+      "import": "./dist/events/index.js"
+    },
+    "./extensions": {
+      "types": "./dist/extensions/index.d.ts",
+      "require": "./dist/extensions/index.js",
+      "import": "./dist/extensions/index.js"
+    },
+    "./network": {
+      "types": "./dist/network/index.d.ts",
+      "require": "./dist/network/index.js",
+      "import": "./dist/network/index.js"
+    },
+    "./network/connection": {
+      "types": "./dist/network/connection/index.d.ts",
+      "require": "./dist/network/connection/index.js",
+      "import": "./dist/network/connection/index.js"
+    },
+    "./sessions": {
+      "types": "./dist/sessions/index.d.ts",
+      "require": "./dist/sessions/index.js",
+      "import": "./dist/sessions/index.js"
+    },
+    "./tl": {
+      "types": "./dist/tl/index.d.ts",
+      "require": "./dist/tl/index.js",
+      "import": "./dist/tl/index.js"
+    },
+    "./tl/core": {
+      "types": "./dist/tl/core/index.d.ts",
+      "require": "./dist/tl/core/index.js",
+      "import": "./dist/tl/core/index.js"
+    },
+    "./tl/custom": {
+      "types": "./dist/tl/custom/index.d.ts",
+      "require": "./dist/tl/custom/index.js",
+      "import": "./dist/tl/custom/index.js"
+    },
+    "./tl/patched": {
+      "types": "./dist/tl/patched/index.d.ts",
+      "require": "./dist/tl/patched/index.js",
+      "import": "./dist/tl/patched/index.js"
     },
     "./*": {
       "types": "./dist/*.d.ts",
@@ -21,8 +72,18 @@
       "import": "./dist/*.js"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "node scripts/build.js",
+    "build:check": "node scripts/build.js --check",
+    "build:browser": "node scripts/build-browser.js",
+    "codegen": "node scripts/codegen.js",
+    "codegen:check": "node scripts/codegen.js --check",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node scripts/smoke.js",
+    "verify": "npm run build:check && npm test",
     "test": "jest"
   },
   "repository": {
@@ -79,12 +140,13 @@
     "buffer": "^6.0.3",
     "htmlparser2": "^6.1.0",
     "mime": "^3.0.0",
+    "node-localstorage": "^3.0.5",
     "pako": "^2.0.3",
     "path-browserify": "^1.0.1",
     "real-cancellable-promise": "^1.1.1",
+    "socks": "^2.8.7",
     "store2": "^2.13.0",
     "ts-custom-error": "^3.2.0",
-    "websocket": "^1.0.34",
-    "socks": "^2.8.7"
+    "websocket": "^1.0.34"
   }
 }

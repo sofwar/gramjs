@@ -132,7 +132,7 @@ class _ParticipantsIter extends requestIter_1.RequestIter {
                 const channel = await this.client.invoke(new tl_1.Api.channels.GetFullChannel({
                     channel: entity,
                 }));
-                if (!(channel.fullChat instanceof tl_1.Api.ChatFull)) {
+                if (channel.fullChat instanceof tl_1.Api.ChannelFull) {
                     this.total = channel.fullChat.participantsCount;
                 }
             }

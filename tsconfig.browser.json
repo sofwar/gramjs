@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./tempBrowser",
+    "outDir": "./browser"
+  },
+  "exclude": [
+    "tempBrowser/tl/types-generator",
+    "tempBrowser/tl/generateModule.js",
+    "node_modules"
+  ],
+  "include": ["tempBrowser"]
+}

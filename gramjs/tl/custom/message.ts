@@ -1059,7 +1059,15 @@ export class CustomMessage extends SenderGetter {
                 }
             }
 
-            const options = findPoll(this.poll.poll.answers) || [];
+            // Only pollAnswer carries an option to vote with; inputPollAnswer
+            // (layer 228) is the client-side variant and has none.
+            const options =
+                findPoll(
+                    this.poll.poll.answers.filter(
+                        (answer): answer is Api.PollAnswer =>
+                            answer instanceof Api.PollAnswer
+                    )
+                ) || [];
             return await this.client.invoke(
                 new Api.messages.SendVote({
                     peer: this.inputChat,

@@ -136,7 +136,8 @@ export class _DialogsIter extends RequestIter {
         }
 
         for (const d of r.dialogs) {
-            if (d instanceof Api.DialogFolder) {
+            // Folders and communities have no peer/top message of their own.
+            if (!(d instanceof Api.Dialog)) {
                 continue;
             }
             const message = messages.get(
@@ -176,6 +177,9 @@ export class _DialogsIter extends RequestIter {
         }
         let lastMessage;
         for (let dialog of r.dialogs.reverse()) {
+            if (!(dialog instanceof Api.Dialog)) {
+                continue;
+            }
             lastMessage = messages.get(
                 _dialogMessageKey(dialog.peer, dialog.topMessage)
             );

@@ -582,7 +582,9 @@ class CustomMessage extends senderGetter_1.SenderGetter {
                     return;
                 }
             }
-            const options = findPoll(this.poll.poll.answers) || [];
+            // Only pollAnswer carries an option to vote with; inputPollAnswer
+            // (layer 228) is the client-side variant and has none.
+            const options = findPoll(this.poll.poll.answers.filter((answer) => answer instanceof api_1.Api.PollAnswer)) || [];
             return await this.client.invoke(new api_1.Api.messages.SendVote({
                 peer: this.inputChat,
                 msgId: this.id,

@@ -16,7 +16,7 @@ export declare function getEntity(client: TelegramClient, entity: EntityLike | E
 /** @hidden */
 export declare function getInputEntity(client: TelegramClient, peer: EntityLike): Promise<Api.TypeInputPeer>;
 /** @hidden */
-export declare function _getEntityFromString(client: TelegramClient, string: string): Promise<Api.InputPeerEmpty | Api.InputPeerSelf | Api.InputPeerChat | Api.InputPeerUser | Api.InputPeerChannel | Api.InputPeerUserFromMessage | Api.InputPeerChannelFromMessage | Api.UserEmpty | Api.User | Api.ChatEmpty | Api.Chat | Api.ChatForbidden | Api.Channel | Api.ChannelForbidden | Entity[]>;
+export declare function _getEntityFromString(client: TelegramClient, string: string): Promise<Api.InputPeerEmpty | Api.InputPeerSelf | Api.InputPeerChat | Api.InputPeerUser | Api.InputPeerChannel | Api.InputPeerUserFromMessage | Api.InputPeerChannelFromMessage | Api.UserEmpty | Api.User | Api.ChatEmpty | Api.Chat | Api.ChatForbidden | Api.Channel | Api.ChannelForbidden | Api.CommunityForbidden | Api.Community | Entity[]>;
 /** @hidden */
 export declare function getPeerId(client: TelegramClient, peer: EntityLike, addMark?: boolean): Promise<string>;
 /** @hidden */

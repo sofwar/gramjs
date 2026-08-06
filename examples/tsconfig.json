@@ -12,17 +12,14 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "declaration": true,
     "skipLibCheck": true,
-    "noEmitOnError": true,
-    "newLine": "lf",
-    "rootDir": "./gramjs",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": "..",
+    "paths": {
+      "telegram": ["gramjs/index"],
+      "telegram/*": ["gramjs/*"]
+    }
   },
-  "exclude": [
-    "gramjs/tl/types-generator",
-    "gramjs/tl/generateModule.js",
-    "node_modules"
-  ],
-  "include": ["gramjs"]
+  "include": ["./**/*.ts"]
 }
+

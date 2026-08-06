@@ -19,6 +19,10 @@ example.d.ts
 
 settings
 
+# Build output. dist/ is intentionally NOT ignored: it is committed so the
+# package can be installed straight from git.
 /browser/
+/tempBrowser/
+*.tsbuildinfo
 
 .DS_STORE

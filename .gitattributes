@@ -1,0 +1,15 @@
+# dist/ is committed, so the build output must be byte-identical no matter
+# which OS produced it. Everything text is stored and checked out with LF;
+# tsc is pinned to LF output via "newLine" in tsconfig.json.
+* text=auto eol=lf
+
+*.tl text eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Generated — keep it out of diffs and out of language statistics.
+dist/** linguist-generated=true
+gramjs/tl/api.d.ts linguist-generated=true
+gramjs/tl/apiTl.js linguist-generated=true
+gramjs/tl/schemaTl.js linguist-generated=true

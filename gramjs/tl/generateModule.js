@@ -1,26 +1,34 @@
 const fs = require("fs");
 const path = require("path");
 
-require("./types-generator/generate");
+const { generateApiTypes, OUTPUT_FILE } = require("./types-generator/generate");
 
-function main() {
-    const apiTl = fs.readFileSync(
-        path.resolve(__dirname, `./static/api.tl`),
-        "utf-8"
-    );
-    fs.writeFileSync(
-        path.resolve(__dirname, "./apiTl.js"),
-        `module.exports = \`${stripTl(apiTl)}\`;`
-    );
+const API_TL = path.resolve(__dirname, "./static/api.tl");
+const SCHEMA_TL = path.resolve(__dirname, "./static/schema.tl");
+const API_TL_JS = path.resolve(__dirname, "./apiTl.js");
+const SCHEMA_TL_JS = path.resolve(__dirname, "./schemaTl.js");
 
-    const schemaTl = fs.readFileSync(
-        path.resolve(__dirname, `./static/schema.tl`),
-        "utf-8"
-    );
-    fs.writeFileSync(
-        path.resolve(__dirname, "./schemaTl.js"),
-        `module.exports = \`${stripTl(schemaTl)}\`;`
-    );
+/**
+ * Turns the static TL schemas into the modules the runtime actually reads.
+ * Returns `[{ file, content }]` instead of writing, so `scripts/codegen.js`
+ * can either write them or diff them against what is committed.
+ */
+function generateTlModules() {
+    return [
+        {
+            file: API_TL_JS,
+            content: `module.exports = \`${stripTl(
+                fs.readFileSync(API_TL, "utf-8")
+            )}\`;`,
+        },
+        {
+            file: SCHEMA_TL_JS,
+            content: `module.exports = \`${stripTl(
+                fs.readFileSync(SCHEMA_TL, "utf-8")
+            )}\`;`,
+        },
+        { file: OUTPUT_FILE, content: generateApiTypes() },
+    ];
 }
 
 function stripTl(tl) {
@@ -30,4 +38,10 @@ function stripTl(tl) {
         .replace(/`/g, "\\`");
 }
 
-main();
+module.exports = { generateTlModules, API_TL, SCHEMA_TL };
+
+if (require.main === module) {
+    for (const { file, content } of generateTlModules()) {
+        fs.writeFileSync(file, content);
+    }
+}

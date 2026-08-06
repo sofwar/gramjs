@@ -898,10 +898,17 @@ function getInputMedia(media, { isPhoto = false, attributes = undefined, forceDo
             if (!media.results.results) {
                 throw new Error("Cannot cast unanswered quiz to any kind of InputMedia.");
             }
+            /* Since layer 228 inputMediaPoll takes answer indexes, not the
+               raw option bytes the results are keyed by. */
             correctAnswers = [];
             for (const r of media.results.results) {
-                if (r.correct) {
-                    correctAnswers.push(r.option);
+                if (!r.correct) {
+                    continue;
+                }
+                const index = media.poll.answers.findIndex((answer) => answer instanceof tl_1.Api.PollAnswer &&
+                    answer.option.equals(r.option));
+                if (index !== -1) {
+                    correctAnswers.push(index);
                 }
             }
         }
